@@ -21,5 +21,5 @@ export async function POST(req: Request) {
     temperature,
   });
 
-  return result.toAIStreamResponse();
+  return result.toDataStreamResponse();
 }

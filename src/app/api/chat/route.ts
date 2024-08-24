@@ -1,5 +1,5 @@
-import { createOpenAI as createGroq } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { convertToCoreMessages, streamText } from 'ai';
+import { createOpenAI as createGroq } from '@ai-sdk/openai';
 
 export const maxDuration = 30;
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: groq(model),
-    messages,
+    messages: convertToCoreMessages(messages),
     temperature,
   });
 

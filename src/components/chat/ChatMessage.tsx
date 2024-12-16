@@ -1,5 +1,7 @@
 import { Message } from "ai/react";
 import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { cn } from "@/lib/utils";
 
@@ -18,12 +20,34 @@ const ChatMessage = ({ message }: { message: Message }) => {
   return (
     <div className={cn("flex", isSelf ? "justify-end" : "justify-start")}>
       {isSelf ? (
-        <div className="max-w-[70%] whitespace-pre-wrap rounded-3xl bg-muted px-5 py-2.5">
+        <div className="max-w-[70%] whitespace-pre-wrap break-words overflow-wrap-anywhere rounded-3xl bg-muted px-5 py-2.5">
           {message.content}
         </div>
       ) : (
-        <div className="max-w-[70%] whitespace-pre-wrap">
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+        <div className="max-w-[70%] prose dark:prose-invert">
+          <ReactMarkdown
+            components={{
+              code({node, inline, className, children, ...props}) {
+                const match = /language-(\w+)/.exec(className || '');
+                return !inline && match ? (
+                  <SyntaxHighlighter
+                    style={vscDarkPlus}
+                    language={match[1]}
+                    PreTag="div"
+                    {...props}
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
+                ) : (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              }
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
         </div>
       )}
     </div>
